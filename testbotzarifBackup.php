@@ -57,10 +57,6 @@ function cropImage($sentImage)
 
 
 
-  //$cropped_img_white = imagecropauto($cropped_img_black, IMG_CROP_THRESHOLD, 1, 16777215);
-  //$cropped_img_black = imagecropauto($cropped_img_white, IMG_CROP_THRESHOLD, 1, 0);
-
-  // header('Content-Type: image/png');
   imagepng($cropped_img_white, 'converted.png');
 
 
