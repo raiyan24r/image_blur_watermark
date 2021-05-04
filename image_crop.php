@@ -52,12 +52,9 @@ function cropImage($sentImage)
   } else $im2 = $finalImage;
 
 
-  $cropped_img_black = imagecropauto($im2, IMG_CROP_THRESHOLD, 1, 0);
-  $cropped_img_white = imagecropauto($cropped_img_black, IMG_CROP_THRESHOLD, 1, 16777215);
 
 
-
-  imagepng($cropped_img_white, 'converted.png');
+  imagepng($im2, 'converted.png');
 
 
 
