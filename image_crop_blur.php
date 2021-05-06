@@ -1,20 +1,20 @@
 <?php
 
 
-$screenshot = 'http://localhost/image_crop/ss1.jpg';
-$logo = 'http://localhost/image_crop/logo.jpg';
+$screenshot = 'http://localhost/image_crop/ss3.jpg'; // screenshot directory
+$logo = 'http://localhost/image_crop/sta.png'; // logo/stamp directory
 
 
-$im = blurLogoImage($screenshot, $logo);
-
-
-
-header('Content-Type: image/jpg');
-imagejpeg($im);
+$im = blurAndPlaceLogoe($screenshot, $logo); //call function blurAndPlaceLogo with parameters screenshot and logo
 
 
 
-function blurLogoImage($screenshot, $logo)
+header('Content-Type: image/png');
+imagepng($im);
+
+
+
+function blurAndPlaceLogo($screenshot, $logo)
 {
 
 
@@ -25,8 +25,14 @@ function blurLogoImage($screenshot, $logo)
     $im = $blurredimg;
 
     $stamp = resizeLogo($logo, imagesx($im));
-    imagecopymerge($im, $stamp, imagesx($im) * .1, imagesy($im) * .4, 0, 0, imagesx($stamp), imagesy($stamp), 30);
-    $img_name = 'testimonial' . rand(10, 100) . '.png';
+
+
+
+    $im = imagecopymerge_alpha($im, $stamp, imagesx($im) * .1, imagesy($im) * .4, 0, 0, imagesx($stamp), imagesy($stamp), 30);
+
+
+    // $img_name = 'testimonial' . rand(10, 100) . '.png';
+    $img_name = 'output.png';
     imagepng($im, $img_name);
 
     return $im;
@@ -41,21 +47,22 @@ function resizeLogo($image, $ss_width)
     $imageWidth = $imageSize[0];
     $imageHeight = $imageSize[1];
 
-    $DESIRED_WIDTH = $ss_width * 0.7;
+    $DESIRED_WIDTH = $ss_width * 0.8;
     $proportionalHeight = round(($DESIRED_WIDTH * $imageHeight) / $imageWidth);
 
-    $originalImage = imagecreatefromjpeg($image);
+    $originalImage = imagecreatefrompng($image);
+    // $originalImage = imagecreatefrompng($image);
 
     $resizedImage = imageCreateTrueColor($DESIRED_WIDTH, $proportionalHeight);
-
+    // imagealphablending($originalImage, false);
+    // imagesavealpha($originalImage, true);
+    imagealphablending($resizedImage, false);
+    imagesavealpha($resizedImage, true);
     imageCopyResampled($resizedImage, $originalImage, 0, 0, 0, 0, $DESIRED_WIDTH + 1, $proportionalHeight + 1, $imageWidth, $imageHeight);
-    //imageJPEG($resizedImage, "save.jpg");
+
 
 
     return $resizedImage;
-
-    // imageDestroy($originalImage);
-    // imageDestroy($resizedImage);
 }
 
 
@@ -88,18 +95,28 @@ function blurImage($sentImage)
     if (imagesy($finalImage) >= 2 * imagesx($finalImage)) {
         imagecopymerge($finalImage, $img2, 0, 0, 0, 0, imagesx($finalImage), imagesy($finalImage) * 0.1, 100);
     } else {
-        // echo "122221";
+        
         imagecopymerge($finalImage, $img2, 0, 0, 0, 0, imagesx($finalImage), imagesy($finalImage) * 0.08, 100);
     }
-
-    // $im2 = imagecrop($finalImage, ['x' => 0, 'y' => imagesy($finalImage) * 0.1, 'width' => imagesx($finalImage), 'height' => imagesy($finalImage) * 0.9]);
-    // $img_name = "ss_cropped.png";
-    // imagepng(
-    //     $finalImage,
-    //     $img_name
-    // );
 
 
 
     return  $finalImage;
+}
+
+function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
+{
+    // creating a cut resource
+    $cut = imagecreatetruecolor($src_w, $src_h);
+
+    // copying relevant section from background to the cut resource
+    imagecopy($cut, $dst_im, 0, 0, $dst_x, $dst_y, $src_w, $src_h);
+
+    // copying relevant section from watermark to the cut resource
+    imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w, $src_h);
+
+    // insert cut resource to destination image
+    imagecopymerge($dst_im, $cut, $dst_x, $dst_y, 0, 0, $src_w, $src_h, $pct);
+
+    return $dst_im;
 }
