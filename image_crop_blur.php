@@ -5,7 +5,7 @@ $screenshot = 'http://localhost/image_crop/ss3.jpg'; // screenshot directory
 $logo = 'http://localhost/image_crop/sta.png'; // logo/stamp directory
 
 
-$im = blurAndPlaceLogoe($screenshot, $logo); //call function blurAndPlaceLogo with parameters screenshot and logo
+$im = blurAndPlaceLogo($screenshot, $logo); //call function blurAndPlaceLogo with parameters screenshot and logo
 
 
 
@@ -31,8 +31,8 @@ function blurAndPlaceLogo($screenshot, $logo)
     $im = imagecopymerge_alpha($im, $stamp, imagesx($im) * .1, imagesy($im) * .4, 0, 0, imagesx($stamp), imagesy($stamp), 30);
 
 
-    // $img_name = 'testimonial' . rand(10, 100) . '.png';
-    $img_name = 'output.png';
+     $img_name = 'testimonial' . rand(10, 100) . '.png';
+   // $img_name = 'output.png';
     imagepng($im, $img_name);
 
     return $im;
