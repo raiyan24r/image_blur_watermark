@@ -1,30 +1,36 @@
 <?php
 
 
-
-$sentImage = 'http://localhost/image_crop/ss1.jpg';
-$croppedimg = blurImage($sentImage);
-
-$im = imagecreatefrompng("http://localhost/image_crop/" . $croppedimg);
-
-$stamp = resizeLogo('http://localhost/image_crop/logo.jpg', imagesx($im));
-
-$marge_right = 10;
-$marge_bottom = 10;
-$sx = imagesx($stamp);
-$sy = imagesy($stamp);
+$screenshot = 'http://localhost/image_crop/ss1.jpg';
+$logo = 'http://localhost/image_crop/logo.jpg';
 
 
-imagecopymerge($im, $stamp, imagesx($im) * .1, imagesy($im) * .4, 0, 0, imagesx($stamp), imagesy($stamp), 30);
+$im = blurLogoImage($screenshot, $logo);
 
-imagepng($im, 'photo_stamp.png');
+
 
 header('Content-Type: image/jpg');
 imagejpeg($im);
 
 
 
+function blurLogoImage($screenshot, $logo)
+{
 
+
+
+    $sentImage = $screenshot;
+    $blurredimg = blurImage($sentImage);
+
+    $im = $blurredimg;
+
+    $stamp = resizeLogo($logo, imagesx($im));
+    imagecopymerge($im, $stamp, imagesx($im) * .1, imagesy($im) * .4, 0, 0, imagesx($stamp), imagesy($stamp), 30);
+    $img_name = 'testimonial' . rand(10, 100) . '.png';
+    imagepng($im, $img_name);
+
+    return $im;
+}
 
 
 function resizeLogo($image, $ss_width)
@@ -43,10 +49,11 @@ function resizeLogo($image, $ss_width)
     $resizedImage = imageCreateTrueColor($DESIRED_WIDTH, $proportionalHeight);
 
     imageCopyResampled($resizedImage, $originalImage, 0, 0, 0, 0, $DESIRED_WIDTH + 1, $proportionalHeight + 1, $imageWidth, $imageHeight);
-    imageJPEG($resizedImage, "save.jpg");
+    //imageJPEG($resizedImage, "save.jpg");
 
 
     return $resizedImage;
+
     // imageDestroy($originalImage);
     // imageDestroy($resizedImage);
 }
@@ -65,68 +72,34 @@ function blurImage($sentImage)
     if (imagesy($finalImage) >= 2 * imagesx($finalImage)) {
         imagecopy($img2, $finalImage, 0, 0, 0, 0, imagesx($finalImage), imagesy($finalImage) * 0.1);
         //echo "11";
-    } 
-    else {
-       // echo "122221";
+    } else {
+        // echo "122221";
         imagecopy($img2, $finalImage, 0, 0, 0, 0, imagesx($finalImage), imagesy($finalImage) * 0.8);
     }
 
 
 
 
-    for ($x = 1; $x <= 50; $x++) {
+    for ($x = 1; $x <= 70; $x++) {
         imagefilter($img2, IMG_FILTER_GAUSSIAN_BLUR);
     }
 
 
     if (imagesy($finalImage) >= 2 * imagesx($finalImage)) {
         imagecopymerge($finalImage, $img2, 0, 0, 0, 0, imagesx($finalImage), imagesy($finalImage) * 0.1, 100);
-
-    } 
-    else {
-       // echo "122221";
-       imagecopymerge($finalImage, $img2, 0, 0, 0, 0, imagesx($finalImage), imagesy($finalImage) * 0.08, 100);
-
+    } else {
+        // echo "122221";
+        imagecopymerge($finalImage, $img2, 0, 0, 0, 0, imagesx($finalImage), imagesy($finalImage) * 0.08, 100);
     }
-   
+
     // $im2 = imagecrop($finalImage, ['x' => 0, 'y' => imagesy($finalImage) * 0.1, 'width' => imagesx($finalImage), 'height' => imagesy($finalImage) * 0.9]);
-    $img_name = "ss_cropped.png";
-    imagepng(
-        $finalImage,
-        $img_name
-    );
+    // $img_name = "ss_cropped.png";
+    // imagepng(
+    //     $finalImage,
+    //     $img_name
+    // );
 
 
 
-    return  $img_name;
-}
-
-function cropImage($sentImage)
-{
-
-
-
-    $finalImage = imagecreatefromjpeg($sentImage);
-
-    $im2 = imagecrop($finalImage, ['x' => 0, 'y' => imagesy($finalImage) * 0.1, 'width' => imagesx($finalImage), 'height' => imagesy($finalImage) * 0.9]);
-
-
-
-    //   if (imagesy($finalImage) > 1.5 * imagesx($finalImage)) {
-    //     $im2 = imagecrop($finalImage, ['x' => 0, 'y' => imagesy($finalImage) * 0.1, 'width' => imagesx($finalImage), 'height' => imagesy($finalImage) * 0.9]);
-    //   } 
-
-
-
-
-    //$img_name = 'converted' . rand(10, 100) . '.png';
-    $img_name = "ss_cropped.png";
-    imagepng(
-        $im2,
-        $img_name
-    );
-
-
-
-    return  $img_name;
+    return  $finalImage;
 }
