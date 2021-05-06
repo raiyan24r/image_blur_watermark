@@ -2,7 +2,7 @@
 
 
 
-$sentImage = 'http://localhost/image_crop/ss1.jpg';
+$sentImage = 'http://localhost/image_crop/ss3.jpg';
 $croppedimg = cropImage($sentImage);
 
 $im = imagecreatefrompng("http://localhost/image_crop/" . $croppedimg);
